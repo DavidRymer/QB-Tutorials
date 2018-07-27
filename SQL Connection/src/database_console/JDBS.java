@@ -1,5 +1,6 @@
 import java.sql.Statement;
 import java.sql.Time;
+import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
@@ -200,7 +201,7 @@ public class JDBS {
 	}
 
 	
-	public static void read() {
+	public static void read(ArrayList<String> fields, String table, String whereField, String whereFieldEquals) {
         ResultSet rs = null;
         
 		System.out.println("Creating statement...");
@@ -210,7 +211,17 @@ public class JDBS {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String sql2= "SELECT id, name, date FROM Languages";
+		
+		String sql2 = "SELECT " + fields.get(0) +", ";
+		
+		for (int i = 1; i < fields.size() - 1; i++) {
+			sql2 += fields.get(i) +", ";
+			
+		}
+		
+		sql2 += fields.get(fields.size() - 1);
+		sql2 += " FROM " + table + " WHERE " + whereField + " = " + whereFieldEquals;
+		System.out.println(sql2);
 		
 		try {
 			rs = stmt.executeQuery(sql2);
@@ -218,13 +229,17 @@ public class JDBS {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		String fieldString;
+		String selected = "";
 
 		try {
 			while(rs.next()) {
-				int id= rs.getInt("id");
-				String name= rs.getString("name");
-				int date= rs.getInt("date");
-				System.out.println("ID: "+ id+ ", name: "+ name+ ", date: "+ date);
+				for (String field: fields) {
+				fieldString = rs.getString(field);
+				selected += "\n" + field +": " + fieldString + "\n";
+				
+				}
+				
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -236,9 +251,28 @@ public class JDBS {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println(selected);
 	}
 	
-	
+	public static void update(String field, String table, String edit, String whereField, String whereFieldEquals) {
+		
+		System.out.println("Creating statement...");
+		try {
+			stmt= conn.createStatement();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		String sql3= "UPDATE " + table +" SET " + field + " = " + edit +" WHERE " +whereField + " = " + whereFieldEquals;
+		System.out.println(sql3);
+		
+		try {
+			stmt.executeUpdate(sql3);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 
 }
